@@ -44,18 +44,16 @@ router.get('/:id', (req, res) => {
   }
 });
 
-router.post('/', (req, res) => {
-  // create a new category
+router.post('/', async (req, res) => {
   try {
-    Category.create(req.body)
-    .then(result => {
-      res.json(result)
-    })
+    const result = await Category.create(req.body);
+    res.json(result);
   } catch(err) {
-    console.log(err)
-    res.status(500).json(err)
+    console.error(err);
+    res.status(500).json({ error: 'Failed to create category' });
   }
 });
+
 
 router.put('/:id', (req, res) => {
   // update a category by its `id` value
@@ -66,7 +64,7 @@ router.put('/:id', (req, res) => {
       }
     })
     .then(result => {
-      res.json(result0)
+      res.json(result)
     })
   } catch(err) {
     console.log(err)
