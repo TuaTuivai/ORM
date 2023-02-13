@@ -20,7 +20,7 @@ router.post('/', (req, res) => {
         const productTagIdArr = req.body.tagIds.map((tag_id) => {
           return {
             product_id: product.id,
-            tag_id,
+            tag_id
           };
         });
         return ProductTag.bulkCreate(productTagIdArr);
@@ -78,25 +78,34 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-  // delete one product by its `id` value
-  Product:destroy({
-    where: {
-      id: req.params.id
-    }
-  })
-})
-.then (productData => {
-  if(!productData){
-    res.status(404).json({
-      message: "No product found with that ID."
+  return new Promise((resolve, reject) => {
+    // delete one product by its `id` value
+    Product.destroy({
+      where: {
+        id: req.params.id
+      }
     })
-    return;
-  }
-  res.json(productData);
-})
-.catch(err => {
-  console.log(err);
-  res.status(500).json(err);
+    .then(productData => {
+      if (!productData) {
+        reject({
+          message: "No product found with that ID."
+        });
+        return;
+      }
+      resolve(productData);
+    })
+    .catch(err => {
+      console.log(err);
+      reject(err);
+    });
+  })
+  .then(productData => {
+    res.json(productData);
+  })
+  .catch(err => {
+    res.status(500).json(err);
+  });
 });
+
  
 module.exports = router;
